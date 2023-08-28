@@ -31,3 +31,28 @@ exports.signup = async (req, res) => {
     res.json({ success: false, error: "Server error" });
   }
 };
+
+exports.login = async(req, res, next) => {
+  const { email, password } = req.body;
+  try {
+    if (isValidString(email) || isValidString(password)){
+      return res.json({success:false, error: "invaild inputs, please enter valid details"});
+    }
+    const user = await Users.findAll({ where: { email } });
+    // console.log("user>>>>>>>>>>>",user[0].dataValues.password)
+    if(user.length > 0) {
+      if (password === user[0].dataValues.password) {
+        return res.json({ success: true, message: "Succesfully Loggedin", user: user});
+      }
+      else {
+        return res.json({success:false, error: "incorrect password!"})
+      }
+    }
+    else {
+      return res.json({success:false, error: "user does not exist, create account"})
+    }
+  }
+  catch(err) {
+    res.json({ success: false, error: "Server error" });
+  }
+}
