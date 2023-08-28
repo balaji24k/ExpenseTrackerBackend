@@ -1,22 +1,30 @@
-const url = "http://localhost:3000/onlineShop";
+const url = "http://localhost:3000/users";
 
-const signup = (event) => {
+const signup = async (event) => {
   event.preventDefault();
-  const name = event.target.name.value;
-  const email = event.target.email.value;
-  const password = event.target.password.value;
+  try {
+    const name = event.target.name.value;
+    const email = event.target.email.value;
+    const password = event.target.password.value;
 
-	if(name.trim().length === 0) {
-		alert("Enter valid Name");
-	}
+    if(name.trim().length === 0) {
+      alert("Enter valid Name");
+    }
 
-  const enteredDetails = { name, email, password };
-	console.log(enteredDetails)
+    const enteredDetails = { name, email, password };
+    console.log(enteredDetails)
 
-  axios.post(url, enteredDetails)
-		.then((result) => {
-			window.location.href = "../Login/login.html";
-		}).catch((err) => {
-			
-		});
+    const response = await axios.post(`${url}/signup`, enteredDetails);
+    console.log(response.data);
+    if (response.data.success) {
+      window.location.href = "../Login/login.html";
+    }
+    else {
+      throw new Error(response.data.error)
+    }
+  } 
+  catch(error) {
+    document.body.innerHTML += `<div style="color:red;" >${error}</div>` 
+  }
+	
 };
