@@ -2,10 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ExpenseTracker</title>
 </head>
 <body>
-    <h1>Login page</h1>
+    <form id="store" onsubmit="login(event)">
+        <label>E-mail:</label>
+        <input type="email" id="email" placeholder="Email" required>
+        <label>Password: </label>
+        <input type="password" id="password" placeholder="Password" required>
+        <button>Login</button>
+    </form>
+
+    <a href="../Signup/signup.html">New User? Create Account Here</a>
+    <script src="login.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
 </body>
 </html>
