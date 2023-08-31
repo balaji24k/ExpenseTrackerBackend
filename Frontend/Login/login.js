@@ -12,7 +12,9 @@ const login = async (event) => {
     const response = await axios.post(`${url}/login`, enteredDetails);
     console.log(response.data);
     if (response.data.success) {
-      // window.location.href = "../Login/login.html";
+      event.target.email.value = "";
+      event.target.password.value = "";
+      window.location.href = "../ExpenseForm/form.html";
       alert("Login success!")
     }
     else {
