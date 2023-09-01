@@ -1,30 +1,36 @@
+let token;
 window.addEventListener("DOMContentLoaded", async() => {
-    try{
-        const res = await axios.get("http://localhost:3000/expenses")
-        // console.log(res, "after refresh");
-        if (res.status === 200) {
-            res.data.forEach(data => showExpenses(data));
-        }
-        else {
-            throw new Error(res.err)
-        }
+  try{
+    const userName = localStorage.getItem("name");
+    document.getElementById("userName").innerText = `User: ${userName}`;
+    token = localStorage.getItem("token");
+    const res = await axios.get("http://localhost:3000/expenses",{
+      headers : {"Authorization": token}
+    })
+    // console.log(res, "after refresh");
+    if (res.status === 200) {
+      res.data.forEach(data => showExpenses(data));
     }
-    catch(err) {
-        alert(err);
+    else {
+      throw new Error(res.err);
     }
-  });
-  
-  const clearFields = () => {
-    document.getElementById("id").value = "";
-    document.getElementById("expense").value = "";
-    document.getElementById("category").value = "";
-    document.getElementById("price").value = "";
   }
+  catch(err) {
+      alert(err);
+  }
+});
+  
+const clearFields = () => {
+  document.getElementById("id").value = "";
+  document.getElementById("expense").value = "";
+  document.getElementById("category").value = "";
+  document.getElementById("price").value = "";
+}
   
   const addExpense = async(event) => {
     try {
         event.preventDefault();
-        console.log(event.target)
+        // console.log(event.target)
         const id = event.target.id.value;
         const expense = event.target.expense.value;
         const category = event.target.category.value;
@@ -33,7 +39,7 @@ window.addEventListener("DOMContentLoaded", async() => {
         console.log(id,"id 32")
     
         const data = { expense, category, price };
-        // console.log(id, "id before condition")
+        console.log(data, "id before condition")
         if (id) {
             const response = await axios.put(`http://localhost:3000/expenses/${id}`, {
                 expense : expense,
@@ -50,8 +56,10 @@ window.addEventListener("DOMContentLoaded", async() => {
             }
             return;
         }
-        // console.log("inside post")
-        const response = await axios.post("http://localhost:3000/expenses", data);
+        console.log(token,".before post")
+        const response = await axios.post("http://localhost:3000/expenses",data,{
+          headers : {"Authorization": token}
+        });
         console.log(response.data,"post");
         if (response.status === 200) {
             clearFields();
@@ -93,7 +101,9 @@ window.addEventListener("DOMContentLoaded", async() => {
   
   const deleteHandler = (id) => {
     removeFromScreen(id);
-    axios.delete(`http://localhost:3000/expenses/${id}`)
+    axios.delete(`http://localhost:3000/expenses/${id}`, {
+      headers : {"Authorization": token}
+    })
       .then((res) => {
         console.log(res.data, "delete req");
       });

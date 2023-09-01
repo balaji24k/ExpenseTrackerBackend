@@ -7,22 +7,25 @@ const login = async (event) => {
     const password = event.target.password.value;
 
     const enteredDetails = { email, password };
-    console.log(enteredDetails)
+    // console.log(enteredDetails)
 
     const response = await axios.post(`${url}/login`, enteredDetails);
     console.log(response.data);
-    if (response.data.success) {
+    if (response.status === 200) {
       event.target.email.value = "";
       event.target.password.value = "";
+      localStorage.setItem("token",response.data.token);
+      localStorage.setItem("name",response.data.name);
+      alert(response.data.message);
       window.location.href = "../ExpenseForm/form.html";
-      alert("Login success!")
     }
     else {
       throw new Error(response.data.error)
     }
   } 
   catch(error) {
-    document.body.innerHTML += `<div style="color:red;" >${error}</div>` 
+    console.log(error.config)
+    alert(error);
   }
 	
 };

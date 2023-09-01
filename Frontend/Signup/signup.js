@@ -15,16 +15,17 @@ const signup = async (event) => {
     console.log(enteredDetails)
 
     const response = await axios.post(`${url}/signup`, enteredDetails);
-    console.log(response.data);
-    if (response.data.success) {
+    console.log(response.status === 200);
+    if (response.status === 200) {
       window.location.href = "../Login/login.html";
+      alert(response.data.message);
     }
     else {
       throw new Error(response.data.error)
     }
   } 
   catch(error) {
-    document.body.innerHTML += `<div style="color:red;" >${error}</div>` 
+    alert(error); 
   }
 	
 };

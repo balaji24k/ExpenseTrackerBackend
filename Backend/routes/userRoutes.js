@@ -1,5 +1,4 @@
 const expense = require("express");
-
 const router = expense.Router();
 
 const userControllers = require("../controllers/userController");

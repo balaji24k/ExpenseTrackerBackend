@@ -1,5 +1,6 @@
 const Users = require("../models/Users");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const isValidString = (string) => {
   if (string == null || string.length === 0) {
@@ -9,33 +10,32 @@ const isValidString = (string) => {
   }
 };
 
+const generateAccessToken = (id,name) => jwt.sign({userId: id, name : name}, "asdfgh");
+ 
 exports.signup = async (req, res) => {
-  console.log("body>>>>>>>>>>>>>>>", req.body);
+  // console.log("body>>>>>>>>>>>>>>>", req.body);
   const { name, email, password } = req.body;
 
   try {
     if (isValidString(name) || isValidString(email) || isValidString(password)){
-      return res.json({success:false, error: "invaild inputs, please enter valid details" });
+      return res.status(400).json({success:false, error: "invaild inputs, please enter valid details" });
     }
 
     // Check if the email already exists in the database
     const existingUser = await Users.findAll({ where: { email: email } });
-    // console.log("existingUser>>>>>>>>>", existingUser);
     if (existingUser.length > 0) {
-      return res.json({ success: false, error: "Email already exists" });
+      return res.status(400).json({ success: false, error: "Email already exists" });
     }
 
     // If email doesn't exist, create a new user
-    console.log(password,"line 29>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     const saltRounds = 10;
     bcrypt.hash(password, saltRounds, (err, hash) => {
-      console.log(err,"inside hash>>>>>>>>>>>>>>>>>>>");
       Users.create({name, email, password: hash});
-      res.json({ success: true, message: "User created"});
+      res.status(200).json({ success: true, message: "Account Created Succesfully!"});
     })
 
   } catch (error) {
-    res.json({ success: false, error: "Server error" });
+    res.status(400).json({ success: false, error: "Server error" });
   }
 };
 
@@ -46,27 +46,31 @@ exports.login = async(req, res, next) => {
       return res.json({success:false, error: "invaild inputs, please enter valid details"});
     }
     const user = await Users.findAll({ where: { email } });
-    // console.log("user>>>>>>>>>>>",user[0].dataValues.password)
+    const userData = user[0].dataValues;
     if(user.length > 0) {
-      const hashPassword = user[0].dataValues.password;
+      const hashPassword = userData.password;
       bcrypt.compare(password, hashPassword, (err, result) => {
         if(err) {
-          return res.json({success:false, error: "something went wrong!"})
+          return res.status(400).json({success:false, error: "something went wrong!"})
         }
         if (result) {
-          return res.json({ success: true, message: "Succesfully Loggedin", user: user});
+          return res.status(200).json({ 
+            success: true, 
+            message: "Loggedin Succesfully!", 
+            name : userData.name,
+            token: generateAccessToken(userData.id,userData.name)});
         }
         else {
-          return res.json({success:false, error: "incorrect password!"})
+          return res.status(400).json({success:false, error: "incorrect password!"})
         }
       }) 
       
     }
     else {
-      return res.json({success:false, error: "user does not exist, create account"})
+      return res.status(404).json({success:false, error: "user does not exist, create account"})
     }
   }
   catch(err) {
-    res.json({ success: false, error: "Server error" });
+    res.status(400).json({ success: false, error: "Server error!" });
   }
 }
