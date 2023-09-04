@@ -28,14 +28,18 @@ exports.getData = (req, res, next) => {
 
 exports.deleteData = (req, res, next) => {
   console.log("delete id",req.params.id)
-  console.log("delete user",req.user)
+  console.log("delete user id",req.user.dataValues.id);
+  const deletingUserId = req.user.dataValues.id;
 
-  Expenses.destroy({where: {id: req.params.id}})
-    .then(data => {
-      res.status(200).json(data);
+  Expenses.destroy({where: {id: req.params.id, userId: deletingUserId}})
+    .then(numOfRows => {
+      if(numOfRows === 0) {
+        return res.status(404).json({success:false, message : "Expense does not belongs to user!"})
+      }
+      return res.status(200).json({success:true, message : "Deleted Successfully"});
     })
     .catch(err => {
-      res.status(500).json(err);
+      res.status(500).json({success:false, message : "Failed!"});
     })
 
   // Expenses.findByPk(req.params.id)
@@ -49,13 +53,16 @@ exports.deleteData = (req, res, next) => {
 exports.updateData = (req, res, next) => {
   console.log("update id",req.params.id);
 	console.log("update body",req.body);
-  Expenses.findByPk(req.params.id)
-    .then(result => {
+  const updatingUserId = req.user.dataValues.id;
+  Expenses.findAll({where: {id: req.params.id, userId: updatingUserId }})
+    .then(results => {
+      // console.log("results>>>>>>>",results[0].expense)
+      const result = results[0];
 	    result.expense = req.body.expense;
       result.category = req.body.category;
       result.price = req.body.price;
       // console.log("ressult>>>>>>>>", result);
-      return result.save();
+      return results[0].save();
     })
     .then(data => {
       console.log("data>>>>>>>>>>>>>>>>>>>>",data)

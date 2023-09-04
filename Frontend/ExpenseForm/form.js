@@ -2,8 +2,11 @@ let token;
 window.addEventListener("DOMContentLoaded", async() => {
   try{
     const userName = localStorage.getItem("name");
-    document.getElementById("userName").innerText = `User: ${userName}`;
     token = localStorage.getItem("token");
+    if (!userName || !token) {
+      window.location.href = "../Login/login.html";
+    };
+    document.getElementById("userName").innerText = `User: ${userName}`;
     const res = await axios.get("http://localhost:3000/expenses",{
       headers : {"Authorization": token}
     })
@@ -19,6 +22,36 @@ window.addEventListener("DOMContentLoaded", async() => {
       alert(err);
   }
 });
+
+const buyPrimium = async(event) => {
+  const response = await axios.get("http://localhost:3000/purchase/buyPrimium",{
+    headers : {"Authorization": token}
+  })
+  console.log(response.razorpay_payment_id,"buyprem");
+  const options = {
+    "key" : response.data.key_id,
+    "order_id": response.data.order.id,
+    "handler" : async(response) => {
+      await axios.post("http://localhost:3000/purchase/updatePremium", {
+        order_id: options.order_id,
+        payment_id: response.razorpay_payment_id,
+      },{headers : {"Authorization": token}})
+
+      alert("You are a Premium User now!")
+    }
+  }
+  const rzp1 = new Razorpay(options);
+  rzp1.open();
+  event.preventDefault();
+
+  rzp1.on('payment.failed', (response) => {
+    console.log(response,"payment failed!");
+    axios.post("http://localhost:3000/purchase/updateFailedOrder", {
+      order_id: options.order_id
+    },{headers : {"Authorization": token}});
+    alert("Payment Failed , Something went Wrong!");
+  });
+}
   
 const clearFields = () => {
   document.getElementById("id").value = "";
@@ -45,6 +78,8 @@ const clearFields = () => {
                 expense : expense,
                 category : category,
                 price : price
+            }, {
+              headers : {"Authorization": token}
             })
             console.log(response.data,"put")
             if (response.status === 200) {
@@ -103,10 +138,9 @@ const clearFields = () => {
     removeFromScreen(id);
     axios.delete(`http://localhost:3000/expenses/${id}`, {
       headers : {"Authorization": token}
-    })
-      .then((res) => {
+    }).then((res) => {
         console.log(res.data, "delete req");
-      });
+    });
   };
   
   const removeFromScreen = (id) => {
