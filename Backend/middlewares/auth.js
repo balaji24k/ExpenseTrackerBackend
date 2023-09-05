@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/Users");
 
-const authenticate = (req, res, next) => {
-
+exports.authenticate = (req, res, next) => {
+	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>in Auth")
 	try {
 		const token = req.header("Authorization");
 		// console.log("token>>>>>>>>>>>", token);
@@ -19,8 +19,6 @@ const authenticate = (req, res, next) => {
 	}
 	catch(err) {
 		console.log(err);
-		return res.status(401).json({success : false})
+		return res.status(401).json({success : false, message:"user does not exists"})
 	}
 }
-
-module.exports = {authenticate};

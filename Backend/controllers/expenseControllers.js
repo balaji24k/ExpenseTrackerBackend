@@ -18,8 +18,8 @@ exports.getData = (req, res, next) => {
   // console.log("in getDatalatest>>>>>>>>>>>",req.user);
   // Expenses.findAll({where : {userId : req.user.id}})
   req.user.getExpenses()
-  .then(data => {
-    res.status(200).json(data);
+  .then(expenses => {
+    res.status(200).json({expenses,user:req.user});
   })
   .catch(err => {
     res.status(500).json(err);

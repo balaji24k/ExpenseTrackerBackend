@@ -5,9 +5,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ExpenseTracker</title>
+    <style>
+        h2,h3{
+            margin: 5px
+        }
+        form{
+            margin: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h2 id="userName" ></h2>
+    <h2 id="userName">User:</h2>   
+    <button onclick="logoutHandler()" >Logout</button>
     <form id="store" onsubmit="addExpense(event)">
         <input type="hidden" id="id" >
         <label>Name of Expense:</label>
@@ -23,12 +32,14 @@
         </select>
         <button>Add Expense</button>
     </form>
-    <button onclick="buyPrimium(event)" >Buy Primium</button>
+    <div id="premiumElement">
+        <button onclick="buyPrimium(event)" >Buy Primium</button>
+    </div>
     <ul id="list">
         <h2>Expenses</h2>
     </ul>
-
-    <a href="../Login/login.html">Logout</a>
+    <ul id="leaderboard"></ul>
+ 
     <script src="https://checkout.razorpay.com/v1/checkout.js" ></script>
     <script src="form.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
