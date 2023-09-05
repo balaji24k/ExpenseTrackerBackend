@@ -42,7 +42,7 @@ const showLeaderBoard = async() => {
       headers : {"Authorization": token}
     })
     parent.innerHTML += `<h2>Leaderboard</h2>`
-    console.log(parent,res.data, "showLeaderBoard");
+    console.log(res.data, "showLeaderBoard");
     res.data.forEach(exp => {
       parent.innerHTML += `<li>Name: ${exp.name} - Spent: \u20B9${exp.spent}</li>`
     })
