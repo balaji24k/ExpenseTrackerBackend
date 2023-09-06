@@ -1,16 +1,26 @@
 const Expenses = require("../models/Expenses");
 const User = require("../models/Users");
+const sequelize = require("../util/database");
+
 
 exports.postData = async(req, res, next) => {
+  const tran = await sequelize.transaction();
   try {
     const totalSpent = Number(req.user.totalSpent) + Number(req.body.price);
-    const promise1 = User.update({totalSpent : totalSpent},{where : {id: req.user.id}})
-    const promise2 = req.user.createExpense(req.body);
+    const promise1 = User.update(
+      {totalSpent : totalSpent},
+      {where : {id: req.user.id},transaction:tran}
+    )
+    const promise2 = req.user.createExpense(req.body,{transaction:tran});
 
     const result = await Promise.all([promise1,promise2]);
+    await tran.commit();
     res.status(200).json(result[1]);
   } catch (error) {
-    res.status(500).json(err);
+    if (tran) {
+      await tran.rollback();
+    }
+    res.status(500).json({error});
   }
 };
 
@@ -19,41 +29,41 @@ exports.getData = async(req, res, next) => {
     const expenses = await req.user.getExpenses();
     res.status(200).json({expenses,user:req.user});
   } catch (error) {
-    res.status(500).json(err);
+    res.status(500).json({error});
   }
 };
 
 exports.deleteData = async(req, res, next) => {
+  const transaction = await sequelize.transaction();
   try {
-    const expense = await req.user.getExpenses({where: {id: req.params.id}});
-    // console.log("del exp>>>>>",expense)
-    console.log("delete>>","total:",req.user.totalSpent,"exp:",expense[0].dataValues.price);
+    const expense = await req.user.getExpenses({where: {id: req.params.id}, transaction});
     const totalSpent = Number(req.user.totalSpent) - Number(expense[0].dataValues.price);
-    const promise1 = User.update({totalSpent : totalSpent},{where : {id: req.user.id}})
-    const promise2 = Expenses.destroy({where: {id: req.params.id}})
+    const promise1 = User.update({totalSpent : totalSpent},{where : {id: req.user.id}, transaction})
+    const promise2 = Expenses.destroy({where: {id: req.params.id}, transaction})
   
     const result = await Promise.all([promise1,promise2]);
+    await transaction.commit();
     res.status(204).json(result);
   } catch (error) {
-    console.log("errr>>>>",error)
-    res.status(404).json({err:error})
+    if (transaction) {
+      await transaction.rollback();
+    }
+    res.status(404).json({error})
   }
 };
 
 exports.updateData = async(req, res, next) => {
-  console.log("update user",req.user.totalSpent);
-	console.log("update body",req.body);
+  // console.log("update user",req.user.totalSpent);
+	// console.log("update body",req.body);
   try {
-    const totalSpent = Number(req.user.totalSpent) - (Number(req.body.prevExpensePrice)-Number(req.body.price));
+    const totalSpent = Number(req.user.totalSpent) - Number(req.body.prevExpensePrice) + Number(req.body.price);
     const promise1 = Expenses.update({price : req.body.price},{where : {id: req.params.id}})
     const promise2 = User.update({totalSpent : totalSpent},{where : {id: req.user.id}})
     
     await Promise.all([promise1,promise2])
-    console.log("update result",req.body);
     res.status(200).json(req.body);
-  } catch (err) {
-    // console.log("err in update",error)
-    res.status(500).json(err)
+  } catch (error) {
+    res.status(500).json({error})
   }
 
 };
