@@ -6,22 +6,25 @@ exports.showLeaderboard = async(req, res, next) => {
 	// console.log(">>>>>>>>>>>>>>>>in showLeaderboard");
 	try {
 		const expenses = await User.findAll({
-			attributes : ['id', 'name', [sequelize.fn('sum',sequelize.col('expenses.price')),'spent']],
-			include : [
-				{
-					model : Expense,
-					attributes: []
-				},
-			],
-			group: ['user.id'],
-			order : [['spent',"DESC"]]
+			attributes : ['id', 'name', 'totalSpent' ],
+			order : [['totalSpent',"DESC"]]
 		});
+
+		console.log("expenses>>>>>>>>>>", expenses[1]);
+		res.status(200).json(expenses);
+
+	} catch (error) {
+		res.status(404).json(error);
+	}
+};
+
+		//1st optimization
 		// const expenses = await Expense.findAll({
 		// 	attributes : ['userId', [sequelize.fn('sum',sequelize.col('expenses.price')),'spent']],
 		// 	group : ['userId']
 		// });
-		console.log("expenses>>>>>>>>>>", expenses[1]);
-		res.status(200).json(expenses);
+
+		//without optimazation
 		// const totalExpenseByUser = {};
 		// expenses.forEach(expense => {
 		// 	// console.log("inside forEch>>>>>>>",expense.dataValues)
@@ -44,7 +47,3 @@ exports.showLeaderboard = async(req, res, next) => {
 		// 	})
 		// })
 		// leaderboardData.sort((a,b)=> b.spent - a.spent)
-	} catch (error) {
-		res.status(404).json(error);
-	}
-};

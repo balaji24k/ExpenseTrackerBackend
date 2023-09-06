@@ -19,6 +19,7 @@
     <button onclick="logoutHandler()" >Logout</button>
     <form id="store" onsubmit="addExpense(event)">
         <input type="hidden" id="id" >
+        <input type="hidden" id="prevExpensePrice" >
         <label>Name of Expense:</label>
         <input type="text" id="expense" placeholder="Expense" required>
         <label>Price: </label>

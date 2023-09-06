@@ -23,6 +23,7 @@ window.addEventListener("DOMContentLoaded", async() => {
 });
 
 const logoutHandler = () => {
+  localStorage.clear();
   window.location.href = "../Login/login.html";
 }
 
@@ -44,7 +45,7 @@ const showLeaderBoard = async() => {
     parent.innerHTML += `<h2>Leaderboard</h2>`
     console.log(res.data, "showLeaderBoard");
     res.data.forEach(exp => {
-      parent.innerHTML += `<li>Name: ${exp.name} - Spent: \u20B9${exp.spent}</li>`
+      parent.innerHTML += `<li>Name: ${exp.name} - Spent: \u20B9${exp.totalSpent}</li>`
     })
     button.innerText = "Hide Leaderboard";
     button.setAttribute("isVisible","hidden");
@@ -108,10 +109,12 @@ const addExpense = async(event) => {
     const data = { expense, category, price };
     // console.log(data, "id before condition")
     if (id) {
+      const prevExpensePrice = document.getElementById("prevExpensePrice").value
       const response = await axios.put(`http://localhost:3000/expenses/${id}`, {
           expense : expense,
           category : category,
-          price : price
+          price : price,
+          prevExpensePrice : prevExpensePrice
       }, {
         headers : {"Authorization": token}
       })
@@ -152,6 +155,7 @@ const showExpenses = data => {
 const editHandler = (id, category, expense, price) => {
   console.log(id,category,expense,price, "edit")
   document.getElementById("id").value = id;
+  document.getElementById("prevExpensePrice").value = price;
   document.getElementById("expense").value = expense;
   document.getElementById("category").value = category;
   document.getElementById("price").value = price;
