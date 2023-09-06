@@ -1,5 +1,3 @@
-const url = "http://localhost:3000/user";
-
 const login = async (event) => {
   event.preventDefault();
   try {
@@ -9,7 +7,7 @@ const login = async (event) => {
     const enteredDetails = { email, password };
     // console.log(enteredDetails)
 
-    const response = await axios.post(`${url}/login`, enteredDetails);
+    const response = await axios.post("http://localhost:3000/user/login", enteredDetails);
     console.log(response.data);
     if (response.status === 200) {
       event.target.email.value = "";
@@ -28,4 +26,14 @@ const login = async (event) => {
     alert(error);
   }
 	
+};
+
+const forgotPassword = async(e) => {
+  e.preventDefault();
+  try { 
+    const email = e.target.name.value;
+    const res = await axios.post("http://localhost:3000/user/forgotPassword",{email})
+  } catch (error) {
+    alert(error);
+  }
 };

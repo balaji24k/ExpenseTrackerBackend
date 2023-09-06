@@ -5,6 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ExpenseTracker</title>
+    <style>
+        button{
+            margin-top: 10px;
+        }
+        a{
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
 </head>
 <body>
     <form id="store" onsubmit="login(event)">
@@ -14,8 +23,8 @@
         <input type="password" id="password" placeholder="Password" required>
         <button>Login</button>
     </form>
-
-    <a href="../Signup/signup.html">New User? Create Account Here</a>
+    <button><a href="../Login/forgotPassword.html">Forgot Password?</a></button>
+    <button><a href="../Signup/signup.html">New User? Create Account Here</a></button>
     <script src="login.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
 </body>
