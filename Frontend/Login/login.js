@@ -28,11 +28,12 @@ const login = async (event) => {
 	
 };
 
-const forgotPassword = async(e) => {
-  e.preventDefault();
+const forgotPassword = async(event) => {
+  event.preventDefault();
+  console.log("forgot")
   try { 
-    const email = e.target.name.value;
-    const res = await axios.post("http://localhost:3000/user/forgotPassword",{email})
+    const email = event.target.email.value;
+    const res = await axios.post("http://localhost:3000/password/forgotPassword",{email})
   } catch (error) {
     alert(error);
   }
