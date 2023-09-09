@@ -12,7 +12,7 @@ const signup = async (event) => {
     }
 
     const enteredDetails = { name, email, password };
-    console.log(enteredDetails)
+    // console.log(enteredDetails);
 
     const response = await axios.post(`${url}/signup`, enteredDetails);
     console.log(response.status === 200);

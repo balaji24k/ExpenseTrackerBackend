@@ -14,6 +14,7 @@ const login = async (event) => {
       event.target.password.value = "";
       localStorage.setItem("token",response.data.token);
       localStorage.setItem("name",response.data.name);
+      console.log(response.data,"after login")
       alert(response.data.message);
       window.location.href = "../ExpenseForm/form.html";
     }
@@ -22,19 +23,22 @@ const login = async (event) => {
     }
   } 
   catch(error) {
-    console.log(error.config)
-    alert(error);
+    console.log(error.response.data)
+    alert(error.response.data.error);
   }
-	
 };
+
 
 const forgotPassword = async(event) => {
   event.preventDefault();
   console.log("forgot")
   try { 
     const email = event.target.email.value;
-    const res = await axios.post("http://localhost:3000/password/forgotPassword",{email})
+    const res = await axios.post("http://localhost:3000/password/forgotPassword",{email});
+    event.target.email.value = "";
+    alert("Email sent!")
   } catch (error) {
-    alert(error);
+    console.log(error.response)
+    alert(error.response.data.error);
   }
 };
