@@ -2,7 +2,6 @@ const Expenses = require("../models/Expenses");
 const User = require("../models/Users");
 const sequelize = require("../util/database");
 
-
 exports.postData = async(req, res, next) => {
   const tran = await sequelize.transaction();
   try {
@@ -20,7 +19,7 @@ exports.postData = async(req, res, next) => {
     if (tran) {
       await tran.rollback();
     }
-    res.status(500).json({error});
+    res.status(500).json(error);
   }
 };
 
@@ -53,8 +52,6 @@ exports.deleteData = async(req, res, next) => {
 };
 
 exports.updateData = async(req, res, next) => {
-  // console.log("update user",req.user.totalSpent);
-	// console.log("update body",req.body);
   try {
     const totalSpent = Number(req.user.totalSpent) - Number(req.body.prevExpensePrice) + Number(req.body.price);
     const promise1 = Expenses.update({price : req.body.price},{where : {id: req.params.id}})

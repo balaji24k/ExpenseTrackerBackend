@@ -2,6 +2,8 @@ const Users = require("../models/Users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+require("dotenv").config();
+
 const isValidString = (string) => {
   if (string == null || string.length === 0) {
     return true;
@@ -10,7 +12,9 @@ const isValidString = (string) => {
   }
 };
 
-const generateAccessToken = (id,name) => jwt.sign({userId: id, name : name}, "asdfgh");
+const generateAccessToken = (id,name) => {
+  return jwt.sign({userId: id, name : name}, process.env.AUTH_KEY);
+}
  
 exports.signup = async (req, res) => {
   // console.log("body>>>>>>>>>>>>>>>", req.body);
@@ -74,4 +78,5 @@ exports.login = async(req, res, next) => {
     res.status(400).json({ success: false, error: "Server error!" });
   }
 };
+
 

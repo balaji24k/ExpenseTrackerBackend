@@ -2,6 +2,7 @@ const uuid = require("uuid");
 const Users = require("../models/Users");
 const bcrypt = require("bcrypt");
 const { createTransport } = require("nodemailer");
+require("dotenv").config();
 
 const ForgotPassword = require("../models/ForgotPassword");
 
@@ -10,18 +11,14 @@ const transporter = createTransport({
   port: 587,
   auth: {
     user: "balaji325s@gmail.com",
-    pass: "xsmtpsib-bf9b6cd8901c5216198a68020cc88bbc6f59ede36217f267b48ed47e41f911c3-p9WCcKX3FUhNAxqn",
+    pass: process.env.API_KEY,
   },
 });
 
 exports.forgotPassword = async (req, res, next) => {
   try {
-    console.log("forgot password controller", req.body);
     const { email } = req.body;
     const user = await Users.findOne({ where: { email } });
-    // console.log("createForgotPassword" in user); // should be true
-    // console.log("Assosciations?>>>>>>>>>>>>",Users.associations);
-    
     const id = uuid.v4();
 
     const mailOptions = {
@@ -32,16 +29,21 @@ exports.forgotPassword = async (req, res, next) => {
     };
 
     if (user) {
-      // console.log("user in if forgot>>>>>>", user);
       await user.createForgotPassword({ id});
       transporter.sendMail(mailOptions, (err, info) => {
-        err ? console.log(err) : console.log(info);
+        if (err) { 
+          console.log(err);
+          return;
+        } 
+        // console.log("email sent",info);
+        res.status(200).json({message:"Email Sent!"})
       });
-    } else {
+    } 
+    else {
       throw new Error("User does not exists!");
     }
   } catch (error) {
-    console.log("err>>>>>>>>>>", error);
+    // console.log("err>>>>>>>>>>", error);
     res.status(400).json({ error: error.message });
   }
 };

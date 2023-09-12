@@ -1,24 +1,17 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/Users");
+require("dotenv").config();
 
-exports.authenticate = (req, res, next) => {
-	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>in Auth")
+exports.authenticate = async(req, res, next) => {
 	try {
 		const token = req.header("Authorization");
-		// console.log("token>>>>>>>>>>>", token);
-		const user = jwt.verify(token,"asdfgh");
-		// console.log("userId>>>>>>>>>>>", user.userId);
-		User.findByPk(user.userId)
-			.then(user => {
-				req.user = user;
-				next();	
-			})
-			.catch(err => {
-				throw new Error(err)
-			})
+		const userObjJwt = jwt.verify(token,process.env.AUTH_KEY);
+		const user = await User.findByPk(userObjJwt.userId)
+		req.user = user;
+		next();	
 	}
 	catch(err) {
-		console.log(err);
+		console.log("auth middleware>>>>>>>>",err);
 		return res.status(401).json({success : false, message:"user does not exists"})
 	}
 }

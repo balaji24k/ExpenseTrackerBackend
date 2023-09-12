@@ -14,6 +14,13 @@ window.addEventListener("DOMContentLoaded", async() => {
     }
     console.log(data, "after refresh");
     data.expenses.forEach(expense => showExpenses(expense));
+
+    const files = await axios.get("http://localhost:3000/premium/getDownloadList",{
+      headers : {"Authorization": token}
+    })
+    files.data.forEach(file => showDownLoadedList(file));
+
+    console.log("files refresh", files.data);
   }
   catch(err) {
       console.log(err.response.data,"errrrrr");
@@ -28,9 +35,11 @@ const logoutHandler = () => {
 }
 
 const updatePremElement = () => {
+  document.getElementById("downloadList").innerHTML = `<h2>Downloaded Expense List</h2>`
   const premElement = document.getElementById("premiumElement");
   premElement.innerHTML = 
     `<h3>You are Primium User</h3> 
+    <button onclick="download()" >Download</button>
     <button id="showPremBtn" isVisible="visible" onclick="showLeaderBoard()">Show Leaderboard</button>`
 }
 
@@ -55,6 +64,37 @@ const showLeaderBoard = async() => {
     button.innerText = "Show Leaderboard";
     button.setAttribute("isVisible","visible");
   }
+}
+
+const download = async() => {
+  try{
+    console.log("dowmload")
+    const response = await axios.get('http://localhost:3000/premium/download', { 
+      headers: {"Authorization" : token} 
+    })
+    showDownLoadedList(response.data);
+    const a = document.createElement("a");
+    a.href = response.data.fileUrl;
+    a.download = 'myexpense.txt';
+    a.click();
+  
+  }
+  catch(error){
+    console.log(error.response.data.error.message,"err download");
+  }
+}
+
+const showDownLoadedList = (file) => {
+  const dateObj = new Date(file.createdAt);
+  const dateString = dateObj.toLocaleDateString();
+  const timeString = dateObj.toLocaleTimeString(); 
+
+  const parent = document.getElementById("downloadList");
+  const child = 
+    `<li id=${file.id}>
+      ${dateString} - ${timeString} -- <a href=${file.fileUrl} >Download</a>
+    </li>`;
+  parent.innerHTML = parent.innerHTML + child;
 }
 
 const buyPrimium = async(event) => {
@@ -141,7 +181,7 @@ const showExpenses = data => {
   const parent = document.getElementById("list");
   const child = 
     `<li id=${data.id}>
-      ${data.expense} -- ${data.category} -- ${data.price}
+      ${data.expense} -- ${data.category} -- \u20B9${data.price}
       <button onclick=editHandler('${data.id}','${data.category}','${data.expense}','${data.price}')>
         Edit
       </button>
