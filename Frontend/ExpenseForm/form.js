@@ -4,7 +4,7 @@ window.addEventListener("DOMContentLoaded", async() => {
     const userName = localStorage.getItem("name");
     token = localStorage.getItem("token");
 
-    const res = await axios.get("http://localhost:3000/expenses",{
+    const res = await axios.get("http://localhost:4000/expenses",{
       headers : {"Authorization": token}
     })
     document.getElementById("userName").innerText = `User: ${userName}`;
@@ -15,7 +15,7 @@ window.addEventListener("DOMContentLoaded", async() => {
     console.log(data, "after refresh");
     data.expenses.forEach(expense => showExpenses(expense));
 
-    const files = await axios.get("http://localhost:3000/premium/getDownloadList",{
+    const files = await axios.get("http://localhost:4000/premium/getDownloadList",{
       headers : {"Authorization": token}
     })
     files.data.forEach(file => showDownLoadedList(file));
@@ -48,7 +48,7 @@ const showLeaderBoard = async() => {
   const parent = document.getElementById("leaderboard");
   console.log(button.getAttribute("isVisible"),"in  showleaderboadr")
   if(button.getAttribute("isVisible") === "visible") {
-    const res = await axios.get("http://localhost:3000/premium/showLeaderboard",{
+    const res = await axios.get("http://localhost:4000/premium/showLeaderboard",{
       headers : {"Authorization": token}
     })
     parent.innerHTML += `<h2>Leaderboard</h2>`
@@ -69,7 +69,7 @@ const showLeaderBoard = async() => {
 const download = async() => {
   try{
     console.log("dowmload")
-    const response = await axios.get('http://localhost:3000/premium/download', { 
+    const response = await axios.get('http://localhost:4000/premium/download', { 
       headers: {"Authorization" : token} 
     })
     showDownLoadedList(response.data);
@@ -98,15 +98,15 @@ const showDownLoadedList = (file) => {
 }
 
 const buyPrimium = async(event) => {
-  const response = await axios.get("http://localhost:3000/purchase/buyPrimium",{
+  const response = await axios.get("http://localhost:4000/purchase/buyPrimium",{
     headers : {"Authorization": token}
   })
-  console.log(response.razorpay_payment_id,"buyprem");
+  console.log(response.data,"buyprem");
   const options = {
     "key" : response.data.key_id,
     "order_id": response.data.order.id,
     "handler" : async(response) => {
-      await axios.post("http://localhost:3000/purchase/updatePremium", {
+      await axios.post("http://localhost:4000/purchase/updatePremium", {
         order_id: options.order_id,
         payment_id: response.razorpay_payment_id,
       },{headers : {"Authorization": token}})
@@ -121,7 +121,7 @@ const buyPrimium = async(event) => {
 
   rzp1.on('payment.failed', (response) => {
     console.log(response,"payment failed!");
-    axios.post("http://localhost:3000/purchase/updateFailedOrder", {
+    axios.post("http://localhost:4000/purchase/updateFailedOrder", {
       order_id: options.order_id
     },{headers : {"Authorization": token}});
     alert("Payment Failed , Something went Wrong!");
@@ -150,7 +150,7 @@ const addExpense = async(event) => {
     // console.log(data, "id before condition")
     if (id) {
       const prevExpensePrice = document.getElementById("prevExpensePrice").value
-      const response = await axios.put(`http://localhost:3000/expenses/${id}`, {
+      const response = await axios.put(`http://localhost:4000/expenses/${id}`, {
           expense : expense,
           category : category,
           price : price,
@@ -164,7 +164,7 @@ const addExpense = async(event) => {
       return;
     }
     console.log(token,".before post")
-    const response = await axios.post("http://localhost:3000/expenses",data,{
+    const response = await axios.post("http://localhost:4000/expenses",data,{
       headers : {"Authorization": token}
     });
     console.log(response.data,"data post");
@@ -204,7 +204,7 @@ const editHandler = (id, category, expense, price) => {
   
 const deleteHandler = (id) => {
   removeFromScreen(id);
-  axios.delete(`http://localhost:3000/expenses/${id}`, {
+  axios.delete(`http://localhost:4000/expenses/${id}`, {
     headers : {"Authorization": token}
   }).then((res) => {
       console.log(res.data, "delete req");

@@ -17,7 +17,7 @@ const generateAccessToken = (id,name) => {
 }
  
 exports.signup = async (req, res) => {
-  // console.log("body>>>>>>>>>>>>>>>", req.body);
+  console.log("body>>>>>>>>>>>>>>>", req.body);
   const { name, email, password } = req.body;
 
   try {
@@ -44,14 +44,15 @@ exports.signup = async (req, res) => {
 };
 
 exports.login = async(req, res, next) => {
+  console.log("login>>>>>",req.body)
   const { email, password } = req.body;
   try {
     if (isValidString(email) || isValidString(password)){
       return res.json({success:false, error: "invaild inputs, please enter valid details"});
     }
     const user = await Users.findAll({ where: { email } });
-    const userData = user[0].dataValues;
     if(user.length > 0) {
+      const userData = user[0].dataValues;
       const hashPassword = userData.password;
       bcrypt.compare(password, hashPassword, (err, result) => {
         if(err) {
@@ -68,14 +69,13 @@ exports.login = async(req, res, next) => {
           return res.status(400).json({success:false, error: "incorrect password!"})
         }
       }) 
-      
     }
     else {
       return res.status(404).json({success:false, error: "user does not exist, create account"})
     }
   }
   catch(err) {
-    res.status(400).json({ success: false, error: "Server error!" });
+    res.status(400).json({error:err.message});
   }
 };
 

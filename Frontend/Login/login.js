@@ -6,7 +6,7 @@ const login = async (event) => {
     const enteredDetails = { email, password };
     // console.log(enteredDetails)
 
-    const response = await axios.post("http://localhost:3000/user/login", enteredDetails);
+    const response = await axios.post("http://localhost:4000/user/login", enteredDetails);
     if (response.status === 200) {
       event.target.email.value = "";
       event.target.password.value = "";
@@ -29,7 +29,7 @@ const forgotPassword = async(event) => {
   console.log("forgot")
   try { 
     const email = event.target.email.value;
-    const res = await axios.post("http://localhost:3000/password/forgotPassword",{email});
+    const res = await axios.post("http://localhost:4000/password/forgotPassword",{email});
     event.target.email.value = "";
     alert(res.data.message);
   } catch (error) {

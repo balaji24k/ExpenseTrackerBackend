@@ -15,9 +15,12 @@ exports.purchasePrimium = async (req, res, next) => {
       if (err) {
         throw new Error(JSON.stringify(err));
       }
+
+      console.log("purchase>>>>>>>",order)
       req.user
         .createOrder({ orderId: order.id, status: "PENDING" })
         .then((result) => {
+          console.log("result>>>>",result);
           return res.status(201).json({ order, key_id: rzp.key_id });
         })
         .catch((err) => {

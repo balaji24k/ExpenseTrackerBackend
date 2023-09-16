@@ -1,4 +1,4 @@
-const url = "http://localhost:3000/user";
+const url = "http://localhost:4000/user";
 
 const signup = async (event) => {
   event.preventDefault();

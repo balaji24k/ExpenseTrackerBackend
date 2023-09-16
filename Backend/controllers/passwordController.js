@@ -17,15 +17,17 @@ const transporter = createTransport({
 
 exports.forgotPassword = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const {email} = req.body;
+    console.log("email forgot>>>>>>",email)
     const user = await Users.findOne({ where: { email } });
+    console.log("user forgot>>>>>>>>>>>",user)
     const id = uuid.v4();
 
     const mailOptions = {
       from: "balaji325s@gmail.com",
       to: email,
       subject: "Password Recovery",
-      text: `http://localhost:3000/password/resetPassword/${id}`,
+      text: `http://localhost:4000/password/resetPassword/${id}`,
     };
 
     if (user) {
@@ -35,7 +37,7 @@ exports.forgotPassword = async (req, res, next) => {
           console.log(err);
           return;
         } 
-        // console.log("email sent",info);
+        console.log("email sent>>>>>>>>>>>",info);
         res.status(200).json({message:"Email Sent!"})
       });
     } 

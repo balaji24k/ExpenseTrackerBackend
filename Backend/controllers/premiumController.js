@@ -54,7 +54,11 @@ exports.downloadExpenses = async(req,res,next) => {
 
 exports.getDownloadList = async(req, res, next) => {
 	try {
-		const files = await req.user.getDownloadLists();
+		const files = await req.user.getDownloadLists({
+			limit: 5,
+			offset: 0,
+			order: [['id', 'DESC']],
+		});
 		console.log("files download",files);
 		res.status(200).json(files);
 	} catch (error) {
