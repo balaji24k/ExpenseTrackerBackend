@@ -25,8 +25,15 @@ exports.postData = async(req, res, next) => {
 
 exports.getData = async(req, res, next) => {
   try {
-    const expenses = await req.user.getExpenses();
-    res.status(200).json({expenses,user:req.user});
+    console.log("query>>>>>",req.query);
+    const {numberOfRows,currPage} = req.query;
+    const expenses = await req.user.getExpenses({
+			limit: +numberOfRows,
+			offset: (+(currPage)-1)*(+numberOfRows),
+			order: [['id', 'DESC']],
+		});
+    const totalExpensesCount = await req.user.countExpenses();
+    res.status(200).json({expenses,totalExpensesCount,user:req.user});
   } catch (error) {
     res.status(500).json({error});
   }

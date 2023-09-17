@@ -1,28 +1,78 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import classes from "./ShowExpenses.module.css";
 import { Button } from "react-bootstrap";
 import ExpenseContext from "../../store/ExpenseContext";
+import AuthContext from "../../store/AuthContext";
 
 const ShowExpenses = () => {
   const expenseCtx = useContext(ExpenseContext);
-  const {expenses} = expenseCtx;
+  const {expenses,replaceExpenses} = expenseCtx;
+  console.log("exp in show",expenses)
+  const {updatePremium} = useContext(AuthContext);
 
-  const maxCount = 5;
-  const [start,setStart] = useState(0);
+  const [totalExpensesCount,setTotalExpensesCount] = useState(0);
+  // console.log(totalExpensesCount,"totalExpensesCount")
+  const [numberOfRows, setNumberOfRows] = useState(+localStorage.getItem("numberOfRows") || 5);
   const [currPage,setCurrPage] = useState(1);
-  const lastpage = Math.ceil(expenses.length/maxCount);
+  const lastpage = Math.ceil(totalExpensesCount/numberOfRows);
+
+  useEffect(() => {
+    const fetchData = async() => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `http://localhost:4000/expenses?numberOfRows=${numberOfRows}&currPage=${currPage}`, {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": token
+          },
+        });
+        const data = await response.json();
+        console.log(data,"show exp useeff");
+        replaceExpenses(data.expenses);
+        setTotalExpensesCount(data.totalExpensesCount);
+        
+        if (data.user.isPremiumUser) {
+          updatePremium();
+        }
+      } catch (error) {
+        console.log(error,"show exp useeff")
+      }
+    }
+    fetchData();
+  }, [numberOfRows,currPage,replaceExpenses,updatePremium]);
 
   const openPage = (page)=> {
-    setStart((page-1)*maxCount);
     setCurrPage(page);
+  };
+
+  const numberOfRowsHandler = (event) => {
+    // console.log("numOfRows",event.target.value)
+    localStorage.setItem("numberOfRows",event.target.value)
+    setNumberOfRows(+event.target.value)
   };
 
   return (
     <div className={classes.box}>
-      <h2 className={classes.text}>Expenses</h2>
+      <div className={classes.rowBox} >
+        <label>
+          Rows Per Page:
+          <select 
+            value={numberOfRows} 
+            onChange={numberOfRowsHandler}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+            <option value={25}>25</option>
+          </select>
+        </label>
+        <h2 className={classes.heading} >Expenses</h2>
+      </div>
       {expenses.length === 0 && <h6 className={classes.text} >No Expenses!</h6>}
       {expenses.length > 0 &&
-        expenses.slice(start,start+maxCount).map(expense => 
+        expenses.map(expense => 
           <div key={expense.id} className={classes.expense}>
             <h5>{expense.expense}</h5>
             <h5>{expense.category}</h5>
@@ -66,8 +116,16 @@ const ShowExpenses = () => {
           {lastpage}
         </Button>
       </div>
-    </div>
+    </div>  
   );
 };
 
 export default ShowExpenses;
+
+
+
+// const add = num => num+2;
+
+// const add = (num) => {
+//   return num+2
+// }

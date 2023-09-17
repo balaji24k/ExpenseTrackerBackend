@@ -8,9 +8,15 @@
     box-shadow: 0px 0px 15px red;
 }
 
-.text {
+.heading {
     font-weight: bold;
     text-align: center;
+}
+
+.rowBox {
+    width: 60%;
+    display: flex;
+    justify-content: space-between;
 }
 
 .expense {

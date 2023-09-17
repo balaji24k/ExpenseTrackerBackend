@@ -14,7 +14,6 @@ const Leaderboard = () => {
 				if(!userName || !token) {
 					return;
 				}
-				// console.log("useeffect")
 				const response = await fetch("http://localhost:4000/premium/showLeaderboard", {
 					headers: {
 						"Content-Type": "application/json",

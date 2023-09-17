@@ -22,7 +22,7 @@ const ExpenseForm = () => {
     const price = +priceRef.current.value;
 
     const newExpense = { expense, category, price };
-    console.log(newExpense, "expense");
+    // console.log(newExpense, "expense");
     expenseCtx.addExpense(newExpense);
     expenseRef.current.value = "";
     categoryRef.current.value = "";
