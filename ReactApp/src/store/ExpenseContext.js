@@ -7,7 +7,10 @@ const ExpenseContext = React.createContext({
   addExpense: () => {},
   removeExpense: () => {},
   addDownloadedFile:  () => {},
-  replaceExpenses : () => {}
+  replaceExpenses : () => {},
+  editExpense: null,
+  editExpenseHandler : () => {},
+  updateExpenseHandler : () => {}
 });
 export default ExpenseContext;
 
@@ -70,6 +73,33 @@ export const ExpenseProvider = (props) => {
     }
   };
 
+  const [editExpense,setEditExpense] = useState(null);
+
+  const editExpenseHandler = (editingExp) => {
+    setEditExpense(editingExp);
+  }
+
+  const updateExpenseHandler = async(updatingExp) => {
+    try {
+      const existingExpIndex = expenses.findIndex(exp => exp.id === updatingExp.id);
+      const updatedExpenses = [...expenses];
+      updatedExpenses[existingExpIndex] = updatingExp;
+      setEditExpense(null);
+      const token = localStorage.getItem("token");
+      await fetch(`http://localhost:4000/expenses/${updatingExp.id}`, {
+        method: "PUT",
+        body: JSON.stringify(updatingExp),
+        headers: {
+          "Content-Type": "application/json",
+					"Authorization": token
+        },
+      });
+      setExpenses(updatedExpenses);
+    } catch (error) {
+      console.log(error,"update")
+    }
+  }
+
   const obj = {
     downloadList,
     replaceDownloadList,
@@ -78,6 +108,9 @@ export const ExpenseProvider = (props) => {
     removeExpense,
     replaceExpenses,
     addDownloadedFile,
+    editExpense,
+    editExpenseHandler,
+    updateExpenseHandler
   }
   return (
     <ExpenseContext.Provider value={obj}>

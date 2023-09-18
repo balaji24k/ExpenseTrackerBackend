@@ -8,8 +8,8 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const ShowExpenses = () => {
   const history = useHistory();
   const expenseCtx = useContext(ExpenseContext);
-  const {expenses,replaceExpenses} = expenseCtx;
-  console.log("exp in show",expenses)
+  const {expenses,replaceExpenses, editExpenseHandler} = expenseCtx;
+  console.log("exp in s/how",expenses)
   const {updatePremium, logout} = useContext(AuthContext);
 
   const [totalExpensesCount,setTotalExpensesCount] = useState(0);
@@ -38,7 +38,7 @@ const ShowExpenses = () => {
           alert(error.message || "Something went wrong");
         }
         const data = await response.json();
-        console.log(data,"show exp useeff");
+        // console.log(data,"show exp useeff");
         replaceExpenses(data.expenses);
         setTotalExpensesCount(data.totalExpensesCount);
 
@@ -83,14 +83,14 @@ const ShowExpenses = () => {
       </div>
       {expenses.length === 0 && <h6 className={classes.text} >No Expenses!</h6>}
       {expenses.length > 0 &&
-        expenses.map(expense => 
+        expenses.slice(0, numberOfRows).map(expense => 
           <div key={expense.id} className={classes.expense}>
             <h5>{expense.expense}</h5>
             <h5>{expense.category}</h5>
             <h5>{expense.price}</h5>
             <Button 
               className={classes.button}
-              // onClick={editExpense.bind(null, expense)}
+              onClick={editExpenseHandler.bind(null, expense)}
             >
               Edit
             </Button>
@@ -132,11 +132,3 @@ const ShowExpenses = () => {
 };
 
 export default ShowExpenses;
-
-
-
-// const add = num => num+2;
-
-// const add = (num) => {
-//   return num+2
-// }

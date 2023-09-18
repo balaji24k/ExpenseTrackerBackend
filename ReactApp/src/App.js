@@ -12,8 +12,8 @@ import DownLoadReport from "./components/Premium/DownLoadReport";
 import ForgotPassword from "./components/Authentication/ForgotPassword";
 
 const App = () => {
-  const authCtx = useContext(AuthContext);
-
+  const {isLoggedIn} = useContext(AuthContext);
+  
   const [isDarkMode, setIsDarkMode] = useState(false);
   const darkModeHandler = (isDarkMode) => {
     setIsDarkMode(isDarkMode);
@@ -24,37 +24,48 @@ const App = () => {
     setIsShowLeaderboard(!isShowLeaderboard);
   }
 
-
   useEffect(()=>{
     if (localStorage.getItem("darkMode")) {
       setIsDarkMode(true)
     }
-  },[authCtx.userName])
+  },[])
+
   return (
     <div className={isDarkMode ? classes.darkMode : ""}>
       <Switch>
         <Route path="/" exact>
-          <Redirect to="/login"/>
+          {!isLoggedIn && <Redirect to="/login"/>}
+          {isLoggedIn && <Redirect to="/expenses"/>}
         </Route>
         <Route path="/forgotPassword" exact>
           <ForgotPassword/>
         </Route>
         <Route path="/login" exact>
-          <LoginPage/>
+          {!isLoggedIn && <LoginPage/>}
+          {isLoggedIn && <Redirect to="/expenses"/>}
         </Route>
         <Route path="/signup" exact>
-          <SignUpPage/>
+          {!isLoggedIn && <SignUpPage/>}
+          {isLoggedIn && <Redirect to="/expenses"/>}
         </Route>
         <Route path="/expenses" exact>
-          <Header
-            isShowLeaderboard={isShowLeaderboard}
-            showLeaderboardHandler={showLeaderboardHandler}
-            isDarkMode={isDarkMode} 
-            darkModeHandler={darkModeHandler} />
-          <ExpenseForm/>
-          <ShowExpenses/>
-          <DownLoadReport/>
-          {isShowLeaderboard && <Leaderboard/>}
+          {!isLoggedIn && <Redirect to="/login"/>}
+          {isLoggedIn && <>
+            <Header
+              isShowLeaderboard={isShowLeaderboard}
+              showLeaderboardHandler={showLeaderboardHandler}
+              isDarkMode={isDarkMode} 
+              darkModeHandler={darkModeHandler} />
+            <ExpenseForm/>
+            <ShowExpenses/>
+            <DownLoadReport/>
+            {isShowLeaderboard && <Leaderboard/>}
+          </>
+          }
+        </Route>
+        <Route path="*" exact>
+          {!isLoggedIn && <Redirect to="/login"/>}
+          {isLoggedIn && <Redirect to="/expenses"/>}
         </Route>
       </Switch>
     </div>

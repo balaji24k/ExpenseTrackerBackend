@@ -5,7 +5,8 @@ import ExpenseContext from '../../store/ExpenseContext';
 const Leaderboard = () => {
 	const [leaderboardData,setLeaderboardData] = useState([]);
 	console.log("leader")
-	const {expenses} = useContext(ExpenseContext)
+	const {expenses} = useContext(ExpenseContext);
+	
 	useEffect(() => {
 		const fetchData = async() => {
 			try {

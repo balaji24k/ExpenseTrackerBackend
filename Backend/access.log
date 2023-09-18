@@ -1,0 +1,2 @@
+::1 - - [18/Sep/2023:16:52:21 +0000] "GET /premium/getDownloadList HTTP/1.1" 304 - "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+::1 - - [18/Sep/2023:16:52:21 +0000] "GET /expenses?numberOfRows=5&currPage=1 HTTP/1.1" 200 884 "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
