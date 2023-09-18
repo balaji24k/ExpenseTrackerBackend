@@ -26,11 +26,11 @@ export const AuthProvider = (props) => {
     setuserName(userName);
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setToken(null);
     setuserName(null);
     localStorage.clear();
-  };
+  },[]);
 
   const updatePremium = useCallback(() => {
     setIsPremiumUser(true);

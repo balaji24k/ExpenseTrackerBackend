@@ -3,12 +3,14 @@ import classes from "./ShowExpenses.module.css";
 import { Button } from "react-bootstrap";
 import ExpenseContext from "../../store/ExpenseContext";
 import AuthContext from "../../store/AuthContext";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const ShowExpenses = () => {
+  const history = useHistory();
   const expenseCtx = useContext(ExpenseContext);
   const {expenses,replaceExpenses} = expenseCtx;
   console.log("exp in show",expenses)
-  const {updatePremium} = useContext(AuthContext);
+  const {updatePremium, logout} = useContext(AuthContext);
 
   const [totalExpensesCount,setTotalExpensesCount] = useState(0);
   // console.log(totalExpensesCount,"totalExpensesCount")
@@ -27,10 +29,19 @@ const ShowExpenses = () => {
             "Authorization": token
           },
         });
+
+        if(!response.ok) {
+          const error = await response.json();
+          console.log(error,"err in refresh");
+          history.replace("/");
+          logout();
+          alert(error.message || "Something went wrong");
+        }
         const data = await response.json();
         console.log(data,"show exp useeff");
         replaceExpenses(data.expenses);
         setTotalExpensesCount(data.totalExpensesCount);
+
         
         if (data.user.isPremiumUser) {
           updatePremium();
@@ -40,7 +51,7 @@ const ShowExpenses = () => {
       }
     }
     fetchData();
-  }, [numberOfRows,currPage,replaceExpenses,updatePremium]);
+  }, [numberOfRows,currPage,replaceExpenses,updatePremium,logout,history]);
 
   const openPage = (page)=> {
     setCurrPage(page);
