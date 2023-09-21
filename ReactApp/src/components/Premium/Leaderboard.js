@@ -15,7 +15,7 @@ const Leaderboard = () => {
 				if(!userName || !token) {
 					return;
 				}
-				const response = await fetch("http://localhost:4000/premium/showLeaderboard", {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/premium/showLeaderboard`, {
 					headers: {
 						"Content-Type": "application/json",
 						"Authorization": token
@@ -23,7 +23,7 @@ const Leaderboard = () => {
 				});
 				// console.log("res in leaderboard", response)
 				const data = await response.json();
-				console.log(data,"leaderboard");
+				// console.log(data,"leaderboard");
 				setLeaderboardData(data);
 			} catch (error) {
 				console.log(error,"leaderboard")

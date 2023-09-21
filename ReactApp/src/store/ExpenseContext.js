@@ -39,7 +39,7 @@ export const ExpenseProvider = (props) => {
     try {
 			const token = localStorage.getItem("token");
       // console.log("newExpense", newExpense);
-      const response = await fetch("http://localhost:4000/expenses", {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/expenses`, {
         method: "POST",
         body: JSON.stringify(newExpense),
         headers: {
@@ -59,7 +59,7 @@ export const ExpenseProvider = (props) => {
     try {
       console.log("remove Exp", id);
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:4000/expenses/${id}`, {
+      await fetch(`${process.env.REACT_APP_BACKEND_API}/expenses/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export const ExpenseProvider = (props) => {
       updatedExpenses[existingExpIndex] = updatingExp;
       setEditExpense(null);
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:4000/expenses/${updatingExp.id}`, {
+      await fetch(`${process.env.REACT_APP_BACKEND_API}/expenses/${updatingExp.id}`, {
         method: "PUT",
         body: JSON.stringify(updatingExp),
         headers: {

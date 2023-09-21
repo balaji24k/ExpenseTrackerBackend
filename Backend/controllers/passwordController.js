@@ -7,27 +7,26 @@ require("dotenv").config();
 const ForgotPassword = require("../models/ForgotPassword");
 
 const transporter = createTransport({
-  host: "smtp-relay.sendinblue.com",
-  port: 587,
+  host: process.env.MAIL_API_HOST,
+  port: process.env.MAIL_API_PORT,
   auth: {
-    user: "balaji325s@gmail.com",
-    pass: process.env.API_KEY,
+    user: process.env.MAIL_API_MAILID,
+    pass: process.env.MAIL_API_KEY,
   },
 });
 
 exports.forgotPassword = async (req, res, next) => {
   try {
     const {email} = req.body;
-    console.log("email forgot>>>>>>",email)
     const user = await Users.findOne({ where: { email } });
-    console.log("user forgot>>>>>>>>>>>",user)
-    const id = uuid.v4();
+    const uniqueReqId = uuid.v4();
 
+    const fromMail = process.env.MAIL_API_MAILID;
     const mailOptions = {
-      from: "balaji325s@gmail.com",
+      from: fromMail,
       to: email,
       subject: "Password Recovery",
-      text: `http://localhost:4000/password/resetPassword/${id}`,
+      text: `http://localhost:4000/password/resetPassword/${uniqueReqId}`,
     };
 
     if (user) {
@@ -37,7 +36,7 @@ exports.forgotPassword = async (req, res, next) => {
           console.log(err);
           return;
         } 
-        console.log("email sent>>>>>>>>>>>",info);
+        // console.log("email sent>>>>>>>>>>>",info);
         res.status(200).json({message:"Email Sent!"})
       });
     } 
@@ -56,7 +55,7 @@ exports.resetPassword = async (req, res, next) => {
     const {id} = req.params;
     const forgotPasswordReq = await ForgotPassword.findOne({ where: { id } });
     if (forgotPasswordReq && forgotPasswordReq.active) {
-      console.log("forg pass req>>",forgotPasswordReq)
+      // console.log("forg pass req>>",forgotPasswordReq)
       forgotPasswordReq.update({ active: false });
       res.status(200).send(
         `<html>
@@ -79,7 +78,7 @@ exports.updatePassword = async(req, res, next) => {
   try {
     const newPassword = req.body.newPassword;
     const {resetPasswordId} = req.params;
-    console.log("resetPasswordId",resetPasswordId)
+    // console.log("resetPasswordId",resetPasswordId)
     const reserPasswordReq = await ForgotPassword.findOne({ where : { id: resetPasswordId }});
     const user = await Users.findOne({where: {id: reserPasswordReq.userId}});
     if(user) {

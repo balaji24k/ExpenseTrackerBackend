@@ -15,15 +15,15 @@ const ShowExpenses = () => {
   const [totalExpensesCount,setTotalExpensesCount] = useState(0);
   // console.log(totalExpensesCount,"totalExpensesCount")
   const [numberOfRows, setNumberOfRows] = useState(+localStorage.getItem("numberOfRows") || 5);
-  const [currPage,setCurrPage] = useState(1);
+  const [currPage,setCurrPage] = useState(+localStorage.getItem('currpage') || 1);
   const lastpage = Math.ceil(totalExpensesCount/numberOfRows);
-
+  
   useEffect(() => {
     const fetchData = async() => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://localhost:4000/expenses?numberOfRows=${numberOfRows}&currPage=${currPage}`, {
+          `${process.env.REACT_APP_BACKEND_API}/expenses?numberOfRows=${numberOfRows}&currPage=${currPage}`, {
           headers: {
             "Content-Type": "application/json",
             "Authorization": token
@@ -42,7 +42,6 @@ const ShowExpenses = () => {
         replaceExpenses(data.expenses);
         setTotalExpensesCount(data.totalExpensesCount);
 
-        
         if (data.user.isPremiumUser) {
           updatePremium();
         }
@@ -53,7 +52,8 @@ const ShowExpenses = () => {
     fetchData();
   }, [numberOfRows,currPage,replaceExpenses,updatePremium,logout,history]);
 
-  const openPage = (page)=> {
+  const changePage = (page)=> {
+    localStorage.setItem('currpage',page);
     setCurrPage(page);
   };
 
@@ -104,9 +104,9 @@ const ShowExpenses = () => {
           </div>
         )
       }
-      <div className={classes.buttonContainer}>
+      {expenses.length > 0 && <div className={classes.buttonContainer}>
         {currPage>1 && <Button 
-          onClick={openPage.bind(null,currPage-1)}
+          onClick={changePage.bind(null,currPage-1)}
           className={classes.button}>
             {currPage-1}
         </Button>}
@@ -116,17 +116,17 @@ const ShowExpenses = () => {
             {currPage}
         </Button>
         {currPage < lastpage &&  <Button 
-          onClick={openPage.bind(null,currPage+1)} 
+          onClick={changePage.bind(null,currPage+1)} 
           className={classes.button}>
             {currPage+1}
         </Button>}.................
         <Button
-          onClick={openPage.bind(null,lastpage)} 
+          onClick={changePage.bind(null,lastpage)} 
           className={classes.button}
         >
           {lastpage}
         </Button>
-      </div>
+      </div>}
     </div>  
   );
 };

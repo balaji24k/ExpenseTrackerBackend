@@ -14,7 +14,7 @@ const ForgotPassword = () => {
 			event.preventDefault();
 			const email = emailRef.current.value;
 			console.log(email,"email")
-			const response = await fetch("http://localhost:4000/password/forgotPassword",{
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/password/forgotPassword`,{
         method: "POST",
         body: JSON.stringify({email}),
         headers: {

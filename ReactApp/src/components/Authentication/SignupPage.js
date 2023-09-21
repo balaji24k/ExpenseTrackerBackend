@@ -5,13 +5,14 @@ import SignUpForm from "./SignupForm";
 
 const SignUpPage = () => {
   const history = useHistory();
+  // console.log(process.env.REACT_APP_BACKEND_API,"env in signup");
 
   const [isLoading, setIsLoading] = useState(false);
 
   const submitHandler = async(name,email,password) => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:4000/user/signup",{
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/user/signup`,{
         method: "POST",
         body: JSON.stringify({name,email,password}),
         headers: {

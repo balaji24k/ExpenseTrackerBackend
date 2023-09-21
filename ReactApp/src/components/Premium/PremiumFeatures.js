@@ -9,7 +9,7 @@ const PremiumFeatures = (props) => {
     try {
 			setIsLoading(true);
 			const token = localStorage.getItem('token')
-			const response = await fetch('http://localhost:4000/premium/download', { 
+			const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/premium/download`, { 
 					headers: {"Authorization" : token} 
 			});
 			if(!response.ok) {

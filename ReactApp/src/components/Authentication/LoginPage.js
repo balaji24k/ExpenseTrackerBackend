@@ -13,7 +13,7 @@ const LoginPage = () => {
   const submitHandler = async(email,password) => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:4000/user/login",{
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/user/login`,{
         method: "POST",
         body: JSON.stringify({email,password}),
         headers: {

@@ -7,7 +7,7 @@ const PurchasePremium = () => {
 	const buyPremium = async () => {
     try {
       const token = localStorage.getItem("token");
-      const orderResponse = await fetch("http://localhost:4000/purchase/buyPrimium", {
+      const orderResponse = await fetch(`${process.env.REACT_APP_BACKEND_API}/purchase/buyPrimium`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",
@@ -20,7 +20,7 @@ const PurchasePremium = () => {
         "key": orderData.key_id,
         "order_id": orderData.order.id,
         "handler": async (response) => {
-          const paymentResponse = await fetch("http://localhost:4000/purchase/updatePremium", {
+          const paymentResponse = await fetch(`${process.env.REACT_APP_BACKEND_API}/purchase/updatePremium`, {
             method: 'POST',
             headers: {
               "Content-Type": "application/json",
@@ -45,7 +45,7 @@ const PurchasePremium = () => {
       rzp1.on('payment.failed', async (response) => {
         console.log(response, "payment failed!");
   
-        const failureResponse = await fetch("http://localhost:4000/purchase/updateFailedOrder", {
+        const failureResponse = await fetch(`${process.env.REACT_APP_BACKEND_API}/purchase/updateFailedOrder`, {
           method: 'POST',
           headers: {
             "Content-Type": "application/json",

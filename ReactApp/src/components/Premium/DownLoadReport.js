@@ -13,7 +13,7 @@ const DownLoadReport = () => {
 				if(!userName || !token) {
 					return;
 				}
-				const fileResponse = await fetch("http://localhost:4000/premium/getDownloadList", {
+				const fileResponse = await fetch(`${process.env.REACT_APP_BACKEND_API}/premium/getDownloadList`, {
 					headers: {
 						"Content-Type": "application/json",
 						"Authorization": token
